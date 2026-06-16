@@ -467,7 +467,7 @@ function POS({ empresa }: { empresa: typeof EMPRESAS[0] }) {
         {tab === 'productos' && (
           <div style={{padding:'12px 16px'}}>
             <FI><div style={{color:'#888',fontSize:10,textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:4}}>INVENTARIO</div>
-              <div style={{color:'#fff',fontSize:18,fontWeight:700,marginBottom:16}}}>{PRODUCTOS.length} productos</div>
+              <div style={{color:'#fff',fontSize:18,fontWeight:700,marginBottom:16}}>{PRODUCTOS.length} productos</div>
             </FI>
             <div style={{display:'flex',flexDirection:'column',gap:8}}>
               {PRODUCTOS.map((p,i)=>(
