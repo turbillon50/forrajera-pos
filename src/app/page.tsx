@@ -2,239 +2,315 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-/* ══════════════════════════════════════════
-   DATOS
-══════════════════════════════════════════ */
+/* ══════ PALETA REAL forrajera19hermanos.com.mx ══════
+   Rojo principal: #8B0000
+   Dorado:         #B8860B / #FFD700
+   Fondo oscuro:   #2d0000 / #1a0000
+   Fondo claro:    #f9f9f9
+   Texto:          #333
+══════════════════════════════════════════════════════ */
+
+const BRAND   = '#8B0000'
+const GOLD    = '#B8860B'
+const GOLD2   = '#FFD700'
+const DARK    = '#1a0000'
+const BG      = '#f9f9f9'
+
+/* ══════ DATOS ══════ */
 const EMPRESAS = [
-  { id:'tot', nombre:'19H Tototlán',   ciudad:'Tototlán, Jalisco',    color:'#C62828' },
-  { id:'gdl', nombre:'19H Guadalajara',ciudad:'Guadalajara, Jalisco', color:'#1565C0' },
-  { id:'mich',nombre:'19H Michoacán',  ciudad:'Zamora, Michoacán',    color:'#2E7D32' },
+  { id:'tot',  nombre:'Tototlán',   full:'Sucursal Tototlán',   ciudad:'Tototlán, Jalisco',    img:'/images/sucursal_tototlan.jpg', color:BRAND },
+  { id:'gdl',  nombre:'Guadalajara',full:'Sucursal Guadalajara', ciudad:'Guadalajara, Jalisco', img:'/images/sucursal_gdl.jpg',      color:'#6d1212' },
+  { id:'mich', nombre:'Michoacán',  full:'Sucursal Michoacán',   ciudad:'Zamora, Michoacán',    img:'/images/productos_forraje.jpg', color:'#3e0a0a' },
+]
+
+const CATEGORIAS_IMG = [
+  { nombre:'Bovinos',     img:'/images/sucursal_tototlan.jpg' },
+  { nombre:'Porcinos',    img:'/images/productos_forraje.jpg' },
+  { nombre:'Aves',        img:'/images/sucursal_gdl.jpg' },
+  { nombre:'Granos',      img:'/images/hero_campo.jpg' },
+  { nombre:'Suplementos', img:'/images/productos_forraje.jpg' },
+  { nombre:'Caprinos',    img:'/images/sucursal_tototlan.jpg' },
 ]
 
 const PRODUCTOS = [
-  { id:1, sku:'BOV-001', nombre:'Alimento Bovino Inicio',        cat:'Bovinos',     unidad:'costal 40kg', precio:485, stock:240 },
-  { id:2, sku:'BOV-002', nombre:'Alimento Bovino Desarrollo',    cat:'Bovinos',     unidad:'costal 40kg', precio:465, stock:180 },
-  { id:3, sku:'POR-001', nombre:'Alimento Porcino Lechón',       cat:'Porcinos',    unidad:'costal 25kg', precio:380, stock:95  },
-  { id:4, sku:'POR-002', nombre:'Alimento Porcino Engorda',      cat:'Porcinos',    unidad:'costal 40kg', precio:420, stock:130 },
-  { id:5, sku:'AVI-001', nombre:'Alimento Avícola Postura',      cat:'Aves',        unidad:'costal 40kg', precio:360, stock:310 },
-  { id:6, sku:'AVI-002', nombre:'Alimento Avícola Engorda',      cat:'Aves',        unidad:'costal 40kg', precio:340, stock:275 },
-  { id:7, sku:'CAP-001', nombre:'Alimento Caprino Lactación',    cat:'Caprinos',    unidad:'costal 25kg', precio:395, stock:60  },
-  { id:8, sku:'GRA-001', nombre:'Maíz Rolado',                   cat:'Granos',      unidad:'costal 50kg', precio:285, stock:450 },
-  { id:9, sku:'GRA-002', nombre:'Sorgo Molido',                  cat:'Granos',      unidad:'costal 50kg', precio:260, stock:380 },
-  { id:10,sku:'SUP-001', nombre:'Pasta de Soya',                 cat:'Suplementos', unidad:'costal 40kg', precio:720, stock:90  },
-  { id:11,sku:'SUP-002', nombre:'Melaza de Caña',                cat:'Suplementos', unidad:'cubeta 20L',  precio:180, stock:75  },
-  { id:12,sku:'SUP-003', nombre:'Sal Mineral Bovino',            cat:'Suplementos', unidad:'saco 25kg',   precio:420, stock:120 },
+  { id:1,  sku:'BOV-001', nombre:'Alimento Bovino Inicio',     cat:'Bovinos',     unidad:'costal 40kg', precio:485, stock:240 },
+  { id:2,  sku:'BOV-002', nombre:'Alimento Bovino Desarrollo', cat:'Bovinos',     unidad:'costal 40kg', precio:465, stock:180 },
+  { id:3,  sku:'POR-001', nombre:'Alimento Porcino Lechón',    cat:'Porcinos',    unidad:'costal 25kg', precio:380, stock:95  },
+  { id:4,  sku:'POR-002', nombre:'Alimento Porcino Engorda',   cat:'Porcinos',    unidad:'costal 40kg', precio:420, stock:130 },
+  { id:5,  sku:'AVI-001', nombre:'Alimento Avícola Postura',   cat:'Aves',        unidad:'costal 40kg', precio:360, stock:310 },
+  { id:6,  sku:'AVI-002', nombre:'Alimento Avícola Engorda',   cat:'Aves',        unidad:'costal 40kg', precio:340, stock:275 },
+  { id:7,  sku:'CAP-001', nombre:'Alimento Caprino Lactación', cat:'Caprinos',    unidad:'costal 25kg', precio:395, stock:60  },
+  { id:8,  sku:'GRA-001', nombre:'Maíz Rolado',                cat:'Granos',      unidad:'costal 50kg', precio:285, stock:450 },
+  { id:9,  sku:'GRA-002', nombre:'Sorgo Molido',               cat:'Granos',      unidad:'costal 50kg', precio:260, stock:380 },
+  { id:10, sku:'SUP-001', nombre:'Pasta de Soya',              cat:'Suplementos', unidad:'costal 40kg', precio:720, stock:90  },
+  { id:11, sku:'SUP-002', nombre:'Melaza de Caña',             cat:'Suplementos', unidad:'cubeta 20L',  precio:180, stock:75  },
+  { id:12, sku:'SUP-003', nombre:'Sal Mineral Bovino',         cat:'Suplementos', unidad:'saco 25kg',   precio:420, stock:120 },
 ]
-
-const CATS = ['Todos','Bovinos','Porcinos','Aves','Caprinos','Granos','Suplementos']
 
 const VENTAS_DEMO = [
-  { id:'V-001', cliente:'Rancho La Esperanza',  total:4850, items:10, hora:'10:23', metodo:'Efectivo',     empresa:'19H Tototlán' },
-  { id:'V-002', cliente:'Granja Los Pinos',      total:2160, items:6,  hora:'09:45', metodo:'Transferencia',empresa:'19H Guadalajara'},
-  { id:'V-003', cliente:'Familia Rodríguez',     total:1440, items:4,  hora:'09:12', metodo:'Efectivo',     empresa:'19H Tototlán' },
-  { id:'V-004', cliente:'Engordadora El Pital',  total:8720, items:20, hora:'08:50', metodo:'Crédito',      empresa:'19H Michoacán' },
+  { id:'V-001', cliente:'Rancho La Esperanza',  total:4850, hora:'10:23', metodo:'Efectivo',     empresa:'Tototlán' },
+  { id:'V-002', cliente:'Granja Los Pinos',      total:2160, hora:'09:45', metodo:'Transferencia',empresa:'Guadalajara' },
+  { id:'V-003', cliente:'Familia Rodríguez',     total:1440, hora:'09:12', metodo:'Efectivo',     empresa:'Tototlán' },
+  { id:'V-004', cliente:'Engordadora El Pital',  total:8720, hora:'08:50', metodo:'Crédito',      empresa:'Michoacán' },
 ]
 
-/* ══════════════════════════════════════════
-   ICONOS
-══════════════════════════════════════════ */
-const IC = {
-  cart:  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6"/></svg>,
-  chart: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>,
-  box:   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>,
-  user:  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
-  plus:  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
-  minus: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>,
-  check: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
-  close: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
-  back:  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>,
-  grid:  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
-  users: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
-  search:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
-}
+type CartItem = { p: typeof PRODUCTOS[0]; qty: number }
 
-const FI = ({c,d=0}:{c:React.ReactNode;d?:number}) => (
-  <motion.div initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{duration:0.2,delay:d,ease:'easeOut'}}>{c}</motion.div>
-)
-
-/* ══════════════════════════════════════════
-   SPLASH
-══════════════════════════════════════════ */
+/* ══════ SPLASH ══════ */
 function Splash({ onDone }: { onDone: () => void }) {
-  useEffect(() => { const t = setTimeout(onDone, 2200); return () => clearTimeout(t) }, [onDone])
+  useEffect(() => { const t = setTimeout(onDone, 2400); return () => clearTimeout(t) }, [onDone])
   return (
-    <motion.div initial={{opacity:1}} exit={{opacity:0}} transition={{duration:0.4}}
-      style={{position:'fixed',inset:0,zIndex:9999,display:'flex',flexDirection:'column',
-        alignItems:'center',justifyContent:'center',background:'#C62828'}}>
-      <motion.div initial={{opacity:0,scale:0.85}} animate={{opacity:1,scale:1}}
-        transition={{duration:0.7,ease:'easeOut'}}
-        style={{display:'flex',flexDirection:'column',alignItems:'center',gap:16}}>
-        <div style={{width:88,height:88,borderRadius:24,background:'rgba(255,255,255,0.15)',
-          border:'2px solid rgba(255,255,255,0.35)',display:'flex',alignItems:'center',
-          justifyContent:'center',overflow:'hidden'}}>
-          <img src="/images/logo_forrajera.png" alt="19H"
-            style={{width:'100%',height:'100%',objectFit:'cover'}}
-            onError={(e:any) => {
-              e.target.style.display='none'
-              e.target.nextSibling.style.display='flex'
-            }}/>
-          <div style={{display:'none',width:'100%',height:'100%',alignItems:'center',
-            justifyContent:'center',fontFamily:'Georgia,serif',fontSize:32,
-            color:'#fff',fontWeight:700}}>19</div>
+    <motion.div initial={{ opacity:1 }} exit={{ opacity:0, scale:1.05 }} transition={{ duration:0.5 }}
+      style={{ position:'fixed', inset:0, zIndex:9999, background:DARK,
+        display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
+      {/* Imagen de fondo */}
+      <div style={{ position:'absolute', inset:0, overflow:'hidden' }}>
+        <img src="/images/hero_campo.jpg" alt=""
+          style={{ width:'100%', height:'100%', objectFit:'cover', filter:'brightness(0.25) saturate(0.8)' }}/>
+        <div style={{ position:'absolute', inset:0,
+          background:`radial-gradient(ellipse at center, ${BRAND}33 0%, ${DARK}ee 70%)` }}/>
+      </div>
+
+      <motion.div initial={{ opacity:0, y:30, scale:0.9 }} animate={{ opacity:1, y:0, scale:1 }}
+        transition={{ duration:0.8, ease:'easeOut' }}
+        style={{ position:'relative', textAlign:'center', display:'flex', flexDirection:'column',
+          alignItems:'center', gap:20 }}>
+
+        {/* Logo real */}
+        <div style={{ width:100, height:100, borderRadius:24, overflow:'hidden',
+          border:`3px solid ${GOLD}66`, background:'rgba(0,0,0,0.4)',
+          boxShadow:`0 0 60px ${BRAND}88` }}>
+          <img src="/images/logo.png" alt="19H"
+            style={{ width:'100%', height:'100%', objectFit:'contain', padding:8 }}
+            onError={(e:any) => { e.target.style.display='none' }}/>
         </div>
-        <div style={{fontFamily:'Georgia,serif',fontSize:26,color:'#fff',letterSpacing:'0.04em',
-          textAlign:'center',lineHeight:1.2}}>
-          Forrajera<br/>19 Hermanos
+
+        <div>
+          <div style={{ fontFamily:'Georgia,serif', fontSize:32, color:'#fff',
+            letterSpacing:'0.05em', marginBottom:6 }}>Forrajera</div>
+          <div style={{ fontFamily:'Georgia,serif', fontSize:22, color:GOLD2,
+            letterSpacing:'0.08em', marginBottom:10 }}>19 Hermanos</div>
+          <div style={{ width:60, height:2, background:GOLD, margin:'0 auto 10px',
+            borderRadius:1 }}/>
+          <div style={{ fontSize:11, color:'rgba(255,255,255,0.5)', textTransform:'uppercase',
+            letterSpacing:'0.2em' }}>Sistema de ventas</div>
         </div>
-        <div style={{fontSize:11,color:'rgba(255,255,255,0.65)',textTransform:'uppercase',
-          letterSpacing:'0.18em'}}>Sistema de Ventas</div>
       </motion.div>
     </motion.div>
   )
 }
 
-/* ══════════════════════════════════════════
-   LANDING — solo si quieren ver el negocio
-══════════════════════════════════════════ */
+/* ══════ LANDING ══════ */
 function Landing({ onEntrar }: { onEntrar: () => void }) {
   return (
-    <div style={{minHeight:'100svh',background:'#0f0f0f',overflowX:'hidden'}}>
-      {/* HERO */}
-      <div style={{position:'relative',minHeight:'100svh',display:'flex',
-        flexDirection:'column',justifyContent:'flex-end',padding:'0 20px 40px'}}>
-        <div style={{position:'absolute',inset:0}}>
-          <img src="/images/hero_forrajera.jpg" alt="Forrajera"
-            style={{width:'100%',height:'100%',objectFit:'cover',filter:'brightness(0.45)'}}/>
-          <div style={{position:'absolute',inset:0,
-            background:'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.75) 70%)'}}/>
-        </div>
+    <div style={{ background:BG, minHeight:'100svh', fontFamily:"'Poppins',sans-serif" }}>
 
-        <div style={{position:'relative',zIndex:1}}>
-          {/* Logo */}
-          <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:24}}>
-            <div style={{width:52,height:52,borderRadius:14,background:'#C62828',
-              display:'flex',alignItems:'center',justifyContent:'center',
-              fontFamily:'Georgia,serif',fontSize:22,color:'#fff',fontWeight:700,
-              border:'2px solid rgba(255,255,255,0.2)'}}>19</div>
-            <div>
-              <div style={{fontSize:18,fontWeight:700,color:'#fff'}}>Forrajera 19 Hermanos</div>
-              <div style={{fontSize:12,color:'rgba(255,255,255,0.6)'}}>Tototlán, Jalisco · Desde 2003</div>
+      {/* NAV */}
+      <div style={{ background:'#fff', borderBottom:`2px solid ${BRAND}`, padding:'0 20px',
+        height:64, display:'flex', alignItems:'center', justifyContent:'space-between',
+        position:'sticky', top:0, zIndex:50, boxShadow:'0 2px 12px rgba(139,0,0,0.1)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <img src="/images/logo.png" alt="19H"
+            style={{ width:44, height:44, objectFit:'contain', borderRadius:8 }}
+            onError={(e:any) => { e.target.style.display='none' }}/>
+          <div>
+            <div style={{ fontSize:14, fontWeight:700, color:BRAND, lineHeight:1.2 }}>
+              Forrajera 19 Hermanos
             </div>
+            <div style={{ fontSize:10, color:'#888' }}>Tototlán, Jalisco · Desde 2003</div>
           </div>
+        </div>
+        <motion.button whileTap={{ scale:0.96 }} onClick={onEntrar}
+          style={{ padding:'9px 18px', borderRadius:999, border:'none', cursor:'pointer',
+            background:BRAND, color:'#fff', fontSize:12, fontWeight:700, fontFamily:'inherit',
+            boxShadow:`0 4px 12px ${BRAND}44` }}>
+          Iniciar sesión
+        </motion.button>
+      </div>
 
-          <h1 style={{fontFamily:'Georgia,serif',fontSize:'clamp(2rem,8vw,3rem)',
-            color:'#fff',lineHeight:1.1,marginBottom:16}}>
-            Calidad que<br/><span style={{color:'#EF9A9A'}}>Nutre el Campo</span>
+      {/* HERO */}
+      <div style={{ position:'relative', height:'72svh', overflow:'hidden' }}>
+        <img src="/images/hero_campo.jpg" alt="Campo"
+          style={{ width:'100%', height:'100%', objectFit:'cover', filter:'brightness(0.55)' }}/>
+        <div style={{ position:'absolute', inset:0,
+          background:'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(26,0,0,0.85) 100%)' }}/>
+        <motion.div initial={{ opacity:0, y:40 }} animate={{ opacity:1, y:0 }}
+          transition={{ delay:2.5, duration:0.8 }}
+          style={{ position:'absolute', bottom:0, left:0, right:0, padding:'32px 24px' }}>
+          <div style={{ fontSize:11, color:GOLD2, textTransform:'uppercase',
+            letterSpacing:'0.2em', marginBottom:10, fontWeight:600 }}>
+            ● MÁS DE 20 AÑOS EN EL CAMPO
+          </div>
+          <h1 style={{ fontFamily:'Georgia,serif', fontSize:'clamp(2rem,7vw,3rem)',
+            color:'#fff', lineHeight:1.1, marginBottom:12 }}>
+            Calidad que<br/>
+            <span style={{ color:GOLD2 }}>nutre el campo</span>
           </h1>
-
-          <p style={{fontSize:14,color:'rgba(255,255,255,0.75)',lineHeight:1.6,marginBottom:32,maxWidth:400}}>
-            Alimentos balanceados para ganado bovino, porcino, aves y más. 
-            Jalisco, Michoacán y toda nuestra región.
+          <p style={{ fontSize:14, color:'rgba(255,255,255,0.8)', marginBottom:24,
+            maxWidth:400, lineHeight:1.6 }}>
+            De una familia de 19 hermanos de Tototlán, Jalisco a productores
+            de todo México.
           </p>
-
-          <div style={{display:'flex',flexDirection:'column',gap:12}}>
-            <motion.button whileTap={{scale:0.97}} onClick={onEntrar}
-              style={{padding:'16px',borderRadius:14,border:'none',cursor:'pointer',
-                background:'#C62828',color:'#fff',fontSize:15,fontWeight:700,
-                width:'100%',maxWidth:400,fontFamily:'inherit'}}>
-              Iniciar sesión — Empleados
+          <div style={{ display:'flex', gap:12 }}>
+            <motion.button whileTap={{ scale:0.96 }} onClick={onEntrar}
+              style={{ padding:'13px 24px', borderRadius:12, border:'none', cursor:'pointer',
+                background:BRAND, color:'#fff', fontSize:14, fontWeight:700,
+                fontFamily:'inherit', boxShadow:`0 6px 20px ${BRAND}66` }}>
+              Entrar al sistema →
             </motion.button>
             <a href="tel:+523919160449"
-              style={{display:'block',padding:'14px',borderRadius:14,
-                border:'1.5px solid rgba(255,255,255,0.25)',color:'#fff',
-                fontSize:14,fontWeight:600,textAlign:'center',textDecoration:'none',
-                width:'100%',maxWidth:400,boxSizing:'border-box'}}>
-              📞 391 916 0449
+              style={{ padding:'13px 20px', borderRadius:12, border:`2px solid ${GOLD}`,
+                color:GOLD2, fontSize:14, fontWeight:600, textDecoration:'none',
+                display:'inline-flex', alignItems:'center', gap:6 }}>
+              📞 Llamar
             </a>
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      {/* INFO */}
-      <div style={{padding:'40px 20px',maxWidth:480,margin:'0 auto'}}>
-        <div style={{fontSize:11,color:'#C62828',textTransform:'uppercase',
-          letterSpacing:'0.12em',marginBottom:16}}>PRESENCIA NACIONAL</div>
-        {EMPRESAS.map((e,i) => (
-          <FI key={e.id} d={i*0.08} c={
-            <div style={{padding:'14px 16px',borderRadius:14,
-              background:'#1a1a1a',border:'1px solid rgba(255,255,255,0.07)',
-              marginBottom:10,display:'flex',alignItems:'center',gap:14}}>
-              <div style={{width:10,height:10,borderRadius:'50%',background:e.color,flexShrink:0}}/>
-              <div>
-                <div style={{fontSize:14,fontWeight:600,color:'#f0f0f0'}}>{e.nombre}</div>
-                <div style={{fontSize:12,color:'#888'}}>{e.ciudad}</div>
-              </div>
-            </div>
-          }/>
-        ))}
-
-        <div style={{marginTop:32,padding:'20px',borderRadius:16,
-          background:'rgba(198,40,40,0.08)',border:'1px solid rgba(198,40,40,0.2)'}}>
-          <div style={{fontSize:12,color:'#C62828',fontWeight:700,marginBottom:8}}>
-            +20 años de experiencia
-          </div>
-          <div style={{fontSize:13,color:'#888',lineHeight:1.6}}>
-            De una familia de 19 hermanos de Tototlán, Jalisco a más de 110 millones de mexicanos. 
-            Km. 1.5 carretera Tototlán-Guadalajara.
-          </div>
+      {/* CATEGORÍAS con imágenes Higgsfield */}
+      <div style={{ padding:'40px 16px', maxWidth:640, margin:'0 auto' }}>
+        <div style={{ textAlign:'center', marginBottom:28 }}>
+          <div style={{ fontSize:11, color:BRAND, textTransform:'uppercase',
+            letterSpacing:'0.15em', fontWeight:700, marginBottom:6 }}>LÍNEAS DE PRODUCTO</div>
+          <h2 style={{ fontFamily:'Georgia,serif', fontSize:26, color:DARK }}>
+            Alimentos balanceados
+          </h2>
         </div>
-      </div>
-    </div>
-  )
-}
-
-/* ══════════════════════════════════════════
-   SELECTOR DE EMPRESA
-══════════════════════════════════════════ */
-function SelectorEmpresa({ onSelect }: { onSelect: (e: typeof EMPRESAS[0]) => void }) {
-  return (
-    <div style={{minHeight:'100svh',background:'#0f0f0f',display:'flex',
-      flexDirection:'column',alignItems:'center',justifyContent:'center',padding:24}}>
-      <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}
-        style={{width:'100%',maxWidth:380}}>
-        <div style={{textAlign:'center',marginBottom:36}}>
-          <div style={{width:64,height:64,borderRadius:18,background:'#C62828',
-            display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',
-            fontFamily:'Georgia,serif',fontSize:26,color:'#fff',fontWeight:700}}>19</div>
-          <div style={{fontSize:20,fontWeight:700,color:'#f0f0f0',marginBottom:4}}>
-            Forrajera 19 Hermanos
-          </div>
-          <div style={{fontSize:13,color:'#888'}}>Selecciona tu sucursal</div>
-        </div>
-
-        <div style={{display:'flex',flexDirection:'column',gap:12}}>
-          {EMPRESAS.map((e,i) => (
-            <motion.button key={e.id} initial={{opacity:0,x:-20}} animate={{opacity:1,x:0}}
-              transition={{delay:0.1+i*0.08}} whileTap={{scale:0.97}} onClick={() => onSelect(e)}
-              style={{padding:'16px 20px',borderRadius:16,border:`1px solid ${e.color}44`,
-                background:`${e.color}11`,cursor:'pointer',textAlign:'left',
-                display:'flex',alignItems:'center',justifyContent:'space-between',
-                fontFamily:'inherit'}}>
-              <div style={{display:'flex',alignItems:'center',gap:14}}>
-                <div style={{width:44,height:44,borderRadius:12,background:e.color,
-                  display:'flex',alignItems:'center',justifyContent:'center',
-                  fontFamily:'Georgia,serif',fontSize:16,color:'#fff',fontWeight:700}}>19</div>
-                <div>
-                  <div style={{fontSize:14,fontWeight:700,color:'#f0f0f0'}}>{e.nombre}</div>
-                  <div style={{fontSize:12,color:'#888'}}>{e.ciudad}</div>
-                </div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12 }}>
+          {CATEGORIAS_IMG.map((cat,i) => (
+            <motion.div key={cat.nombre} initial={{ opacity:0, y:20 }}
+              whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+              transition={{ delay:i*0.08 }}
+              style={{ position:'relative', aspectRatio:'1/1', borderRadius:20,
+                overflow:'hidden', border:`3px solid ${GOLD2}`,
+                boxShadow:'0 8px 20px rgba(0,0,0,0.2)', cursor:'pointer' }}>
+              <img src={cat.img} alt={cat.nombre}
+                style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+              <div style={{ position:'absolute', inset:0,
+                background:'linear-gradient(to top, rgba(26,0,0,0.9) 0%, transparent 50%)' }}/>
+              <div style={{ position:'absolute', bottom:8, left:0, right:0, textAlign:'center',
+                fontWeight:800, fontSize:13, color:GOLD2,
+                textShadow:'0 2px 8px rgba(0,0,0,0.8)', padding:'0 6px' }}>
+                {cat.nombre}
               </div>
-              <div style={{color:'#555',width:20,height:20}}>{IC.back}</div>
-            </motion.button>
+            </motion.div>
           ))}
         </div>
-      </motion.div>
+      </div>
+
+      {/* SUCURSALES */}
+      <div style={{ background:DARK, padding:'40px 16px' }}>
+        <div style={{ maxWidth:640, margin:'0 auto' }}>
+          <div style={{ textAlign:'center', marginBottom:28 }}>
+            <div style={{ fontSize:11, color:GOLD, textTransform:'uppercase',
+              letterSpacing:'0.15em', fontWeight:700, marginBottom:6 }}>PRESENCIA</div>
+            <h2 style={{ fontFamily:'Georgia,serif', fontSize:24, color:'#fff' }}>
+              3 sucursales
+            </h2>
+          </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+            {EMPRESAS.map((e,i) => (
+              <motion.div key={e.id} initial={{ opacity:0, x:-20 }}
+                whileInView={{ opacity:1, x:0 }} viewport={{ once:true }}
+                transition={{ delay:i*0.1 }}
+                style={{ borderRadius:16, overflow:'hidden', border:`1px solid ${GOLD}33`,
+                  display:'flex', height:100 }}>
+                <img src={e.img} alt={e.nombre}
+                  style={{ width:100, height:'100%', objectFit:'cover', flexShrink:0 }}/>
+                <div style={{ padding:'14px 16px', display:'flex', flexDirection:'column',
+                  justifyContent:'center', background:'rgba(255,255,255,0.04)' }}>
+                  <div style={{ fontSize:15, fontWeight:700, color:'#fff', marginBottom:4 }}>
+                    {e.full}
+                  </div>
+                  <div style={{ fontSize:12, color:'rgba(255,255,255,0.5)' }}>{e.ciudad}</div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* CTA FINAL */}
+      <div style={{ padding:'40px 24px', textAlign:'center', background:BG }}>
+        <img src="/images/logo.png" alt="19H"
+          style={{ width:60, height:60, objectFit:'contain', marginBottom:16, borderRadius:12 }}
+          onError={(e:any) => { e.target.style.display='none' }}/>
+        <div style={{ fontFamily:'Georgia,serif', fontSize:22, color:DARK, marginBottom:8 }}>
+          ¿Eres empleado de Forrajera 19H?
+        </div>
+        <div style={{ fontSize:13, color:'#888', marginBottom:20 }}>
+          Accede al sistema de ventas con tu cuenta
+        </div>
+        <motion.button whileTap={{ scale:0.97 }} onClick={onEntrar}
+          style={{ padding:'14px 32px', borderRadius:999, border:'none', cursor:'pointer',
+            background:BRAND, color:'#fff', fontSize:15, fontWeight:700,
+            fontFamily:'inherit', boxShadow:`0 8px 24px ${BRAND}44` }}>
+          Iniciar sesión →
+        </motion.button>
+      </div>
     </div>
   )
 }
 
-/* ══════════════════════════════════════════
-   POS
-══════════════════════════════════════════ */
-type CartItem = { producto: typeof PRODUCTOS[0]; cantidad: number }
+/* ══════ SELECTOR EMPRESA ══════ */
+function SelectorEmpresa({ onSelect, onBack }: {
+  onSelect: (e: typeof EMPRESAS[0]) => void
+  onBack: () => void
+}) {
+  return (
+    <div style={{ minHeight:'100svh', background:DARK, display:'flex',
+      flexDirection:'column', fontFamily:"'Poppins',sans-serif" }}>
+      {/* Header */}
+      <div style={{ padding:'16px 20px', display:'flex', alignItems:'center', gap:12,
+        borderBottom:`1px solid ${BRAND}44` }}>
+        <button onClick={onBack} style={{ width:36, height:36, borderRadius:10, border:'none',
+          background:'rgba(255,255,255,0.07)', cursor:'pointer', color:'#fff',
+          display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>
+          ‹
+        </button>
+        <div>
+          <div style={{ fontSize:14, fontWeight:700, color:'#fff' }}>Forrajera 19 Hermanos</div>
+          <div style={{ fontSize:11, color:'rgba(255,255,255,0.4)' }}>Selecciona tu sucursal</div>
+        </div>
+      </div>
 
+      <div style={{ flex:1, padding:'24px 20px' }}>
+        <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+          {EMPRESAS.map((e,i) => (
+            <motion.div key={e.id} initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
+              transition={{ delay:0.05+i*0.08 }} whileTap={{ scale:0.98 }}
+              onClick={() => onSelect(e)}
+              style={{ borderRadius:20, overflow:'hidden', cursor:'pointer', position:'relative',
+                height:120, border:`2px solid ${GOLD}44`,
+                boxShadow:`0 8px 24px rgba(0,0,0,0.4)` }}>
+              <img src={e.img} alt={e.nombre}
+                style={{ width:'100%', height:'100%', objectFit:'cover', filter:'brightness(0.5)' }}/>
+              <div style={{ position:'absolute', inset:0,
+                background:`linear-gradient(135deg, ${e.color}cc 0%, transparent 60%)` }}/>
+              <div style={{ position:'absolute', inset:0, padding:'16px 20px',
+                display:'flex', alignItems:'flex-end', justifyContent:'space-between' }}>
+                <div>
+                  <div style={{ fontSize:18, fontWeight:800, color:'#fff',
+                    textShadow:'0 2px 8px rgba(0,0,0,0.8)' }}>{e.full}</div>
+                  <div style={{ fontSize:12, color:'rgba(255,255,255,0.7)' }}>{e.ciudad}</div>
+                </div>
+                <div style={{ width:32, height:32, borderRadius:'50%',
+                  background:'rgba(255,255,255,0.15)', border:`1px solid ${GOLD}66`,
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  fontSize:18, color:GOLD2 }}>›</div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ══════ POS ══════ */
 function POS({ empresa, onBack }: { empresa: typeof EMPRESAS[0]; onBack: () => void }) {
-  const [tab, setTab] = useState<'pos'|'ventas'|'inventario'|'admin'>('pos')
+  const [tab, setTab] = useState<'venta'|'historial'|'inventario'|'admin'>('venta')
   const [cat, setCat] = useState('Todos')
   const [busqueda, setBusqueda] = useState('')
   const [carrito, setCarrito] = useState<CartItem[]>([])
@@ -243,55 +319,45 @@ function POS({ empresa, onBack }: { empresa: typeof EMPRESAS[0]; onBack: () => v
   const [ventaOk, setVentaOk] = useState(false)
   const [metodo, setMetodo] = useState('efectivo')
   const [cliente, setCliente] = useState('')
-  const [ventasHoy, setVentasHoy] = useState(VENTAS_DEMO)
+  const [ventas, setVentas] = useState(VENTAS_DEMO)
+
+  const CATS = ['Todos','Bovinos','Porcinos','Aves','Caprinos','Granos','Suplementos']
 
   const prodFiltrados = PRODUCTOS.filter(p =>
-    (cat === 'Todos' || p.cat === cat) &&
-    (!busqueda || p.nombre.toLowerCase().includes(busqueda.toLowerCase()) || p.sku.toLowerCase().includes(busqueda.toLowerCase()))
+    (cat==='Todos'||p.cat===cat) &&
+    (!busqueda||p.nombre.toLowerCase().includes(busqueda.toLowerCase())||p.sku.toLowerCase().includes(busqueda.toLowerCase()))
   )
 
-  const totalCarrito = carrito.reduce((a,i) => a + i.producto.precio * i.cantidad, 0)
-  const itemsCarrito = carrito.reduce((a,i) => a + i.cantidad, 0)
-  const totalHoy = ventasHoy.reduce((a,v) => a + v.total, 0)
+  const totalCarrito = carrito.reduce((a,i)=>a+i.p.precio*i.qty,0)
+  const totalHoy = ventas.reduce((a,v)=>a+v.total,0)
+  const qCarrito = carrito.reduce((a,i)=>a+i.qty,0)
 
-  const addToCart = (p: typeof PRODUCTOS[0]) =>
-    setCarrito(prev => {
-      const ex = prev.find(i => i.producto.id === p.id)
-      if (ex) return prev.map(i => i.producto.id === p.id ? {...i,cantidad:i.cantidad+1} : i)
-      return [...prev, {producto:p, cantidad:1}]
-    })
+  const add = (p: typeof PRODUCTOS[0]) => setCarrito(prev => {
+    const ex = prev.find(i=>i.p.id===p.id)
+    if (ex) return prev.map(i=>i.p.id===p.id?{...i,qty:i.qty+1}:i)
+    return [...prev,{p,qty:1}]
+  })
+  const upd = (id:number,d:number) => setCarrito(prev=>
+    prev.map(i=>i.p.id===id?{...i,qty:Math.max(0,i.qty+d)}:i).filter(i=>i.qty>0))
 
-  const updateQty = (id:number, delta:number) =>
-    setCarrito(prev => prev.map(i => i.producto.id===id ? {...i,cantidad:Math.max(0,i.cantidad+delta)} : i).filter(i=>i.cantidad>0))
-
-  const confirmarVenta = () => {
-    const nuevaVenta = {
-      id: `V-${String(ventasHoy.length+1).padStart(3,'0')}`,
-      cliente: cliente || 'Cliente mostrador',
-      total: totalCarrito,
-      items: itemsCarrito,
-      hora: new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}),
-      metodo: metodo === 'efectivo' ? 'Efectivo' : metodo === 'transferencia' ? 'Transferencia' : 'Crédito',
-      empresa: empresa.nombre,
-    }
-    setVentasHoy(prev => [nuevaVenta,...prev])
-    setShowConfirm(false)
-    setVentaOk(true)
-    setTimeout(() => {
-      setVentaOk(false)
-      setCarrito([])
-      setShowCarrito(false)
-      setCliente('')
-    }, 2500)
+  const confirmar = () => {
+    setVentas(prev => [{
+      id:`V-${String(prev.length+1).padStart(3,'0')}`,
+      cliente:cliente||'Mostrador',
+      total:totalCarrito,
+      hora:new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}),
+      metodo:metodo==='efectivo'?'Efectivo':metodo==='transferencia'?'Transferencia':'Crédito',
+      empresa:empresa.nombre,
+    },...prev])
+    setShowConfirm(false); setVentaOk(true)
+    setTimeout(()=>{setVentaOk(false);setCarrito([]);setShowCarrito(false);setCliente('')},2500)
   }
 
-  const BRAND = empresa.color
-
   const TABS = [
-    {id:'pos',       l:'Venta',     icon:IC.cart  },
-    {id:'ventas',    l:'Historial', icon:IC.chart },
-    {id:'inventario',l:'Productos', icon:IC.box   },
-    {id:'admin',     l:'Admin',     icon:IC.grid  },
+    {id:'venta',     l:'Venta'},
+    {id:'historial', l:'Historial'},
+    {id:'inventario',l:'Inventario'},
+    {id:'admin',     l:'Admin'},
   ] as const
 
   return (
@@ -302,16 +368,19 @@ function POS({ empresa, onBack }: { empresa: typeof EMPRESAS[0]; onBack: () => v
           <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
             style={{position:'fixed',inset:0,zIndex:500,background:'rgba(0,0,0,0.95)',
               display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16}}>
-            <motion.div initial={{scale:0}} animate={{scale:1}} transition={{type:'spring',damping:15}}>
-              <div style={{width:80,height:80,borderRadius:'50%',background:BRAND,
-                display:'flex',alignItems:'center',justifyContent:'center',color:'#fff'}}>
-                <div style={{width:36,height:36}}>{IC.check}</div>
-              </div>
+            <motion.div initial={{scale:0,rotate:-10}} animate={{scale:1,rotate:0}}
+              transition={{type:'spring',damping:12}}>
+              <div style={{width:96,height:96,borderRadius:'50%',background:BRAND,
+                display:'flex',alignItems:'center',justifyContent:'center',fontSize:44,
+                boxShadow:`0 0 60px ${BRAND}`}}>✓</div>
             </motion.div>
-            <div style={{fontSize:22,fontWeight:700,color:'#fff'}}>¡Venta registrada!</div>
-            <div style={{fontFamily:'Georgia,serif',fontSize:32,color:BRAND}}>
+            <div style={{fontSize:24,fontWeight:700,color:'#fff',fontFamily:"'Poppins',sans-serif"}}>
+              ¡Venta registrada!
+            </div>
+            <div style={{fontFamily:'Georgia,serif',fontSize:36,color:GOLD2,fontWeight:700}}>
               ${totalCarrito.toLocaleString()}
             </div>
+            <div style={{fontSize:12,color:'rgba(255,255,255,0.4)'}}>{empresa.full}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -320,98 +389,96 @@ function POS({ empresa, onBack }: { empresa: typeof EMPRESAS[0]; onBack: () => v
       <AnimatePresence>
         {showCarrito && (
           <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
-            style={{position:'fixed',inset:0,zIndex:300,background:'rgba(0,0,0,0.8)',
-              backdropFilter:'blur(4px)',display:'flex',alignItems:'flex-end'}}
-            onClick={() => setShowCarrito(false)}>
+            style={{position:'fixed',inset:0,zIndex:300,background:'rgba(0,0,0,0.85)',
+              backdropFilter:'blur(6px)',display:'flex',alignItems:'flex-end'}}
+            onClick={()=>setShowCarrito(false)}>
             <motion.div initial={{y:'100%'}} animate={{y:0}} exit={{y:'100%'}}
               transition={{type:'spring',damping:28,stiffness:280}}
-              style={{width:'100%',maxWidth:480,margin:'0 auto',background:'#1a1a1a',
-                borderRadius:'24px 24px 0 0',maxHeight:'88svh',overflow:'hidden',
-                display:'flex',flexDirection:'column'}}
-              onClick={e => e.stopPropagation()}>
+              style={{width:'100%',maxWidth:480,margin:'0 auto',background:'#1a0000',
+                borderRadius:'24px 24px 0 0',maxHeight:'88svh',
+                display:'flex',flexDirection:'column',
+                border:`1px solid ${GOLD}33`}}
+              onClick={e=>e.stopPropagation()}>
 
-              <div style={{padding:'16px 20px',borderBottom:'1px solid rgba(255,255,255,0.07)',
-                display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0}}>
+              <div style={{padding:'16px 20px',borderBottom:`1px solid ${BRAND}44`,
+                display:'flex',justifyContent:'space-between',alignItems:'center',flexShrink:0}}>
                 <div>
-                  <div style={{fontSize:16,fontWeight:700,color:'#f0f0f0'}}>Ticket de venta</div>
-                  <div style={{fontSize:12,color:'#888'}}>{itemsCarrito} productos</div>
+                  <div style={{fontSize:16,fontWeight:700,color:'#fff',fontFamily:"'Poppins',sans-serif"}}>
+                    Ticket de venta
+                  </div>
+                  <div style={{fontSize:12,color:'rgba(255,255,255,0.5)'}}>{qCarrito} productos</div>
                 </div>
-                <button onClick={() => setShowCarrito(false)}
-                  style={{width:32,height:32,borderRadius:'50%',border:'1px solid rgba(255,255,255,0.1)',
-                    background:'rgba(255,255,255,0.05)',cursor:'pointer',color:'#888',
-                    display:'flex',alignItems:'center',justifyContent:'center'}}>
-                  <div style={{width:14,height:14}}>{IC.close}</div>
-                </button>
+                <button onClick={()=>setShowCarrito(false)}
+                  style={{width:32,height:32,borderRadius:'50%',border:`1px solid ${BRAND}66`,
+                    background:'transparent',cursor:'pointer',color:'#888',fontSize:18}}>✕</button>
               </div>
 
-              {/* Cliente */}
-              <div style={{padding:'12px 20px',borderBottom:'1px solid rgba(255,255,255,0.05)',flexShrink:0}}>
-                <input placeholder="Nombre del cliente (opcional)" value={cliente}
-                  onChange={e => setCliente(e.target.value)}
+              <div style={{padding:'12px 20px',borderBottom:`1px solid ${BRAND}33`,flexShrink:0}}>
+                <input placeholder="Cliente (opcional)" value={cliente}
+                  onChange={e=>setCliente(e.target.value)}
                   style={{width:'100%',padding:'10px 14px',borderRadius:10,
-                    border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.05)',
-                    color:'#f0f0f0',fontSize:13,outline:'none',boxSizing:'border-box',fontFamily:'inherit'}}/>
+                    border:`1px solid ${BRAND}44`,background:'rgba(255,255,255,0.05)',
+                    color:'#fff',fontSize:13,outline:'none',boxSizing:'border-box',
+                    fontFamily:"'Poppins',sans-serif"}}/>
               </div>
 
-              {/* Items */}
-              <div style={{overflowY:'auto',flex:1,padding:'8px 0'}}>
-                {carrito.map(item => (
-                  <div key={item.producto.id} style={{padding:'10px 20px',display:'flex',
+              <div style={{overflowY:'auto',flex:1}}>
+                {carrito.map(item=>(
+                  <div key={item.p.id} style={{padding:'12px 20px',display:'flex',
                     alignItems:'center',justifyContent:'space-between',
-                    borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
+                    borderBottom:`1px solid rgba(255,255,255,0.04)`}}>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{fontSize:13,fontWeight:500,color:'#f0f0f0',
                         overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
-                        {item.producto.nombre}
+                        {item.p.nombre}
                       </div>
-                      <div style={{fontSize:11,color:'#888'}}>{item.producto.unidad} · ${item.producto.precio.toLocaleString()} c/u</div>
+                      <div style={{fontSize:11,color:'rgba(255,255,255,0.4)'}}>
+                        {item.p.unidad} · ${item.p.precio.toLocaleString()} c/u
+                      </div>
                     </div>
                     <div style={{display:'flex',alignItems:'center',gap:10,flexShrink:0}}>
-                      <button onClick={() => updateQty(item.producto.id,-1)}
-                        style={{width:28,height:28,borderRadius:'50%',border:'1px solid rgba(255,255,255,0.15)',
-                          background:'transparent',cursor:'pointer',color:'#f0f0f0',
-                          display:'flex',alignItems:'center',justifyContent:'center'}}>
-                        <div style={{width:14,height:14}}>{IC.minus}</div>
-                      </button>
-                      <span style={{color:'#f0f0f0',fontWeight:700,width:24,textAlign:'center'}}>{item.cantidad}</span>
-                      <button onClick={() => updateQty(item.producto.id,1)}
+                      <button onClick={()=>upd(item.p.id,-1)}
+                        style={{width:28,height:28,borderRadius:'50%',border:`1px solid ${BRAND}66`,
+                          background:'transparent',cursor:'pointer',color:'#fff',fontSize:18,
+                          display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
+                      <span style={{color:'#fff',fontWeight:700,width:24,textAlign:'center'}}>
+                        {item.qty}
+                      </span>
+                      <button onClick={()=>upd(item.p.id,1)}
                         style={{width:28,height:28,borderRadius:'50%',border:'none',
-                          background:BRAND,cursor:'pointer',color:'#fff',
-                          display:'flex',alignItems:'center',justifyContent:'center'}}>
-                        <div style={{width:14,height:14}}>{IC.plus}</div>
-                      </button>
-                      <span style={{color:'#f0f0f0',fontWeight:700,fontSize:13,minWidth:64,textAlign:'right'}}>
-                        ${(item.producto.precio*item.cantidad).toLocaleString()}
+                          background:BRAND,cursor:'pointer',color:'#fff',fontSize:18,
+                          display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
+                      <span style={{color:GOLD2,fontWeight:700,fontSize:13,minWidth:64,textAlign:'right'}}>
+                        ${(item.p.precio*item.qty).toLocaleString()}
                       </span>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Pago */}
-              <div style={{padding:20,borderTop:'1px solid rgba(255,255,255,0.1)',flexShrink:0}}>
-                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
-                  <span style={{color:'#888',fontSize:14}}>Total</span>
-                  <span style={{fontFamily:'Georgia,serif',fontSize:28,fontWeight:700,color:'#f0f0f0'}}>
+              <div style={{padding:20,borderTop:`1px solid ${BRAND}44`,flexShrink:0}}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:16}}>
+                  <span style={{color:'rgba(255,255,255,0.5)',fontSize:14}}>Total</span>
+                  <span style={{fontFamily:'Georgia,serif',fontSize:28,color:GOLD2,fontWeight:700}}>
                     ${totalCarrito.toLocaleString()}
                   </span>
                 </div>
                 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,marginBottom:14}}>
-                  {[['efectivo','💵','Efectivo'],['transferencia','🏦','Transfer.'],['credito','📋','Crédito']].map(([m,e,l]) => (
-                    <button key={m} onClick={() => setMetodo(m)}
+                  {[['efectivo','💵 Efectivo'],['transferencia','🏦 Transfer.'],['credito','📋 Crédito']].map(([m,l])=>(
+                    <button key={m} onClick={()=>setMetodo(m)}
                       style={{padding:'9px 4px',borderRadius:10,fontSize:11,fontWeight:600,
-                        cursor:'pointer',fontFamily:'inherit',
-                        border:`1.5px solid ${metodo===m ? BRAND : 'rgba(255,255,255,0.1)'}`,
-                        background:metodo===m ? `${BRAND}22` : 'transparent',
-                        color:metodo===m ? BRAND : '#666'}}>
-                      {e} {l}
+                        cursor:'pointer',fontFamily:"'Poppins',sans-serif",
+                        border:`1.5px solid ${metodo===m?GOLD:BRAND+'66'}`,
+                        background:metodo===m?`${BRAND}33`:'transparent',
+                        color:metodo===m?GOLD2:'rgba(255,255,255,0.4)'}}>
+                      {l}
                     </button>
                   ))}
                 </div>
-                <motion.button whileTap={{scale:0.97}} onClick={() => setShowConfirm(true)}
+                <motion.button whileTap={{scale:0.97}} onClick={()=>setShowConfirm(true)}
                   style={{width:'100%',padding:'14px',borderRadius:14,border:'none',
                     cursor:'pointer',background:BRAND,color:'#fff',fontSize:15,fontWeight:700,
-                    fontFamily:'inherit'}}>
+                    fontFamily:"'Poppins',sans-serif",boxShadow:`0 8px 24px ${BRAND}66`}}>
                   Cobrar ${totalCarrito.toLocaleString()}
                 </motion.button>
               </div>
@@ -424,26 +491,32 @@ function POS({ empresa, onBack }: { empresa: typeof EMPRESAS[0]; onBack: () => v
       <AnimatePresence>
         {showConfirm && (
           <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
-            style={{position:'fixed',inset:0,zIndex:400,background:'rgba(0,0,0,0.9)',
+            style={{position:'fixed',inset:0,zIndex:400,background:'rgba(0,0,0,0.92)',
               display:'flex',alignItems:'center',justifyContent:'center',padding:24}}>
-            <motion.div initial={{scale:0.9}} animate={{scale:1}}
-              style={{background:'#1a1a1a',borderRadius:24,padding:32,
-                maxWidth:340,width:'100%',textAlign:'center'}}>
-              <div style={{fontSize:36,marginBottom:12}}>🧾</div>
-              <div style={{fontSize:18,fontWeight:700,color:'#f0f0f0',marginBottom:6}}>Confirmar venta</div>
-              <div style={{color:'#888',fontSize:13,marginBottom:4}}>{cliente||'Cliente mostrador'}</div>
-              <div style={{fontFamily:'Georgia,serif',fontSize:36,color:BRAND,fontWeight:700,marginBottom:24}}>
+            <motion.div initial={{scale:0.85,y:20}} animate={{scale:1,y:0}}
+              style={{background:DARK,borderRadius:24,padding:32,maxWidth:320,width:'100%',
+                textAlign:'center',border:`1px solid ${GOLD}44`}}>
+              <div style={{fontSize:40,marginBottom:12}}>🧾</div>
+              <div style={{fontSize:18,fontWeight:700,color:'#fff',marginBottom:4,
+                fontFamily:"'Poppins',sans-serif"}}>Confirmar venta</div>
+              <div style={{color:'rgba(255,255,255,0.5)',fontSize:13,marginBottom:4}}>
+                {cliente||'Mostrador'} · {empresa.full}
+              </div>
+              <div style={{fontFamily:'Georgia,serif',fontSize:40,color:GOLD2,
+                fontWeight:700,margin:'16px 0 24px'}}>
                 ${totalCarrito.toLocaleString()}
               </div>
               <div style={{display:'flex',gap:12}}>
-                <button onClick={() => setShowConfirm(false)}
-                  style={{flex:1,padding:14,borderRadius:12,border:'1px solid rgba(255,255,255,0.15)',
-                    background:'transparent',color:'#f0f0f0',cursor:'pointer',fontSize:14,fontFamily:'inherit'}}>
+                <button onClick={()=>setShowConfirm(false)}
+                  style={{flex:1,padding:14,borderRadius:12,border:`1px solid ${BRAND}66`,
+                    background:'transparent',color:'#fff',cursor:'pointer',fontSize:14,
+                    fontFamily:"'Poppins',sans-serif"}}>
                   Cancelar
                 </button>
-                <motion.button whileTap={{scale:0.97}} onClick={confirmarVenta}
+                <motion.button whileTap={{scale:0.97}} onClick={confirmar}
                   style={{flex:2,padding:14,borderRadius:12,border:'none',
-                    background:BRAND,color:'#fff',cursor:'pointer',fontSize:14,fontWeight:700,fontFamily:'inherit'}}>
+                    background:BRAND,color:'#fff',cursor:'pointer',fontSize:14,fontWeight:700,
+                    fontFamily:"'Poppins',sans-serif"}}>
                   ✓ Confirmar
                 </motion.button>
               </div>
@@ -452,67 +525,64 @@ function POS({ empresa, onBack }: { empresa: typeof EMPRESAS[0]; onBack: () => v
         )}
       </AnimatePresence>
 
-      {/* APP */}
-      <div style={{minHeight:'100svh',background:'#0f0f0f',paddingBottom:80}}>
+      {/* APP LAYOUT */}
+      <div style={{minHeight:'100svh',background:'#111',paddingBottom:80,
+        fontFamily:"'Poppins',sans-serif"}}>
 
         {/* HEADER */}
-        <div style={{position:'sticky',top:0,zIndex:50,padding:'12px 16px',
+        <div style={{position:'sticky',top:0,zIndex:50,
+          background:'rgba(17,17,17,0.97)',backdropFilter:'blur(16px)',
+          borderBottom:`2px solid ${BRAND}`,
           display:'flex',alignItems:'center',justifyContent:'space-between',
-          background:'rgba(15,15,15,0.95)',backdropFilter:'blur(16px)',
-          borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+          padding:'10px 16px'}}>
           <div style={{display:'flex',alignItems:'center',gap:10}}>
             <button onClick={onBack} style={{width:34,height:34,borderRadius:10,
-              border:'1px solid rgba(255,255,255,0.1)',background:'transparent',
-              cursor:'pointer',color:'#888',display:'flex',alignItems:'center',justifyContent:'center'}}>
-              <div style={{width:16,height:16}}>{IC.back}</div>
-            </button>
-            <div style={{width:8,height:8,borderRadius:'50%',background:BRAND}}/>
+              border:`1px solid ${BRAND}66`,background:'transparent',cursor:'pointer',
+              color:'rgba(255,255,255,0.6)',fontSize:18}}>‹</button>
+            <div style={{width:6,height:6,borderRadius:'50%',background:empresa.color}}/>
             <div>
-              <div style={{fontSize:13,fontWeight:700,color:'#f0f0f0'}}>{empresa.nombre}</div>
-              <div style={{fontSize:10,color:'#888'}}>{empresa.ciudad}</div>
+              <div style={{fontSize:13,fontWeight:700,color:'#fff'}}>{empresa.full}</div>
+              <div style={{fontSize:10,color:'rgba(255,255,255,0.4)'}}>{empresa.ciudad}</div>
             </div>
           </div>
-          {itemsCarrito > 0 && tab === 'pos' && (
-            <motion.button initial={{scale:0}} animate={{scale:1}} whileTap={{scale:0.95}}
-              onClick={() => setShowCarrito(true)}
-              style={{position:'relative',padding:'8px 16px',borderRadius:999,border:'none',
-                cursor:'pointer',background:BRAND,color:'#fff',fontSize:13,fontWeight:700,
-                display:'flex',alignItems:'center',gap:6}}>
-              <div style={{width:16,height:16}}>{IC.cart}</div>
-              ${totalCarrito.toLocaleString()}
-              <div style={{position:'absolute',top:-4,right:-4,width:18,height:18,
-                borderRadius:'50%',background:'#fff',color:BRAND,fontSize:10,fontWeight:800,
-                display:'flex',alignItems:'center',justifyContent:'center'}}>{itemsCarrito}</div>
-            </motion.button>
-          )}
+          <AnimatePresence>
+            {qCarrito > 0 && tab === 'venta' && (
+              <motion.button initial={{scale:0}} animate={{scale:1}} exit={{scale:0}}
+                whileTap={{scale:0.95}} onClick={()=>setShowCarrito(true)}
+                style={{position:'relative',padding:'8px 16px',borderRadius:999,border:'none',
+                  cursor:'pointer',background:BRAND,color:'#fff',fontSize:13,fontWeight:700,
+                  display:'flex',alignItems:'center',gap:6,
+                  boxShadow:`0 4px 16px ${BRAND}88`}}>
+                🛒 ${totalCarrito.toLocaleString()}
+                <div style={{position:'absolute',top:-5,right:-5,width:20,height:20,
+                  borderRadius:'50%',background:GOLD2,color:'#111',fontSize:10,fontWeight:800,
+                  display:'flex',alignItems:'center',justifyContent:'center'}}>{qCarrito}</div>
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* POS */}
-        {tab === 'pos' && (
-          <div style={{padding:'12px 16px'}}>
-            {/* Buscar */}
-            <FI d={0} c={
-              <div style={{position:'relative',marginBottom:12}}>
-                <div style={{position:'absolute',left:12,top:'50%',transform:'translateY(-50%)',
-                  width:16,height:16,color:'#555'}}>{IC.search}</div>
-                <input placeholder="Buscar producto o SKU..." value={busqueda}
-                  onChange={e => setBusqueda(e.target.value)}
-                  style={{width:'100%',padding:'10px 10px 10px 36px',borderRadius:12,
-                    border:'1px solid rgba(255,255,255,0.08)',background:'#1a1a1a',
-                    color:'#f0f0f0',fontSize:13,outline:'none',boxSizing:'border-box',fontFamily:'inherit'}}/>
-              </div>
-            }/>
+        {/* VENTA */}
+        {tab === 'venta' && (
+          <div style={{padding:'12px 14px'}}>
+            <input placeholder="🔍 Buscar producto o SKU..." value={busqueda}
+              onChange={e=>setBusqueda(e.target.value)}
+              style={{width:'100%',padding:'11px 14px',borderRadius:12,marginBottom:12,
+                border:`1px solid ${BRAND}44`,background:'rgba(255,255,255,0.05)',
+                color:'#fff',fontSize:13,outline:'none',boxSizing:'border-box',
+                fontFamily:"'Poppins',sans-serif"}}/>
 
             {/* Categorías */}
-            <div style={{display:'flex',gap:8,overflowX:'auto',paddingBottom:8,marginBottom:12,
+            <div style={{display:'flex',gap:8,overflowX:'auto',paddingBottom:10,marginBottom:12,
               scrollbarWidth:'none',WebkitOverflowScrolling:'touch'}}>
-              {CATS.map(c => (
-                <button key={c} onClick={() => setCat(c)}
-                  style={{flexShrink:0,padding:'6px 14px',borderRadius:999,fontSize:12,
-                    fontWeight:600,cursor:'pointer',fontFamily:'inherit',whiteSpace:'nowrap',
-                    border:`1px solid ${cat===c ? BRAND : 'rgba(255,255,255,0.1)'}`,
-                    background:cat===c ? `${BRAND}22` : 'transparent',
-                    color:cat===c ? BRAND : '#666'}}>
+              {CATS.map(c=>(
+                <button key={c} onClick={()=>setCat(c)}
+                  style={{flexShrink:0,padding:'6px 16px',borderRadius:999,fontSize:12,
+                    fontWeight:600,cursor:'pointer',fontFamily:"'Poppins',sans-serif",
+                    whiteSpace:'nowrap',
+                    border:`1.5px solid ${cat===c?GOLD:BRAND+'44'}`,
+                    background:cat===c?BRAND:'transparent',
+                    color:cat===c?'#fff':'rgba(255,255,255,0.4)'}}>
                   {c}
                 </button>
               ))}
@@ -520,43 +590,40 @@ function POS({ empresa, onBack }: { empresa: typeof EMPRESAS[0]; onBack: () => v
 
             {/* Grid productos */}
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
-              {prodFiltrados.map((p,i) => {
-                const enCarrito = carrito.find(c => c.producto.id === p.id)
+              {prodFiltrados.map((p,i)=>{
+                const enCarrito = carrito.find(c=>c.p.id===p.id)
                 return (
-                  <FI key={p.id} d={i*0.03} c={
-                    <motion.div whileTap={{scale:0.96}} onClick={() => addToCart(p)}
-                      style={{background:enCarrito ? `${BRAND}12` : '#1a1a1a',
-                        border:`1px solid ${enCarrito ? BRAND+'44' : 'rgba(255,255,255,0.07)'}`,
-                        borderRadius:16,padding:14,cursor:'pointer'}}>
-                      <div style={{display:'flex',justifyContent:'space-between',
-                        alignItems:'flex-start',marginBottom:8}}>
-                        <span style={{fontSize:9,color:'#555',textTransform:'uppercase',
-                          letterSpacing:'0.08em'}}>{p.sku}</span>
-                        {enCarrito && (
-                          <div style={{width:20,height:20,borderRadius:'50%',background:BRAND,
-                            display:'flex',alignItems:'center',justifyContent:'center',
-                            fontSize:10,color:'#fff',fontWeight:800}}>
-                            {enCarrito.cantidad}
-                          </div>
-                        )}
-                      </div>
-                      <div style={{fontSize:13,fontWeight:600,color:'#f0f0f0',lineHeight:1.3,
-                        marginBottom:4,display:'-webkit-box',WebkitLineClamp:2,
-                        WebkitBoxOrient:'vertical',overflow:'hidden'}}>
-                        {p.nombre}
-                      </div>
-                      <div style={{fontSize:10,color:'#666',marginBottom:10}}>{p.unidad}</div>
-                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                        <span style={{fontFamily:'Georgia,serif',fontSize:16,fontWeight:700,color:BRAND}}>
-                          ${p.precio.toLocaleString()}
-                        </span>
-                        <div style={{width:28,height:28,borderRadius:'50%',background:BRAND,
-                          display:'flex',alignItems:'center',justifyContent:'center',color:'#fff'}}>
-                          <div style={{width:14,height:14}}>{IC.plus}</div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  }/>
+                  <motion.div key={p.id} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}}
+                    transition={{delay:i*0.025}} whileTap={{scale:0.96}}
+                    onClick={()=>add(p)}
+                    style={{background:enCarrito?`${BRAND}22`:'#1a1a1a',
+                      border:`1.5px solid ${enCarrito?GOLD:'rgba(255,255,255,0.07)'}`,
+                      borderRadius:16,padding:14,cursor:'pointer',
+                      boxShadow:enCarrito?`0 0 20px ${BRAND}44`:undefined}}>
+                    <div style={{display:'flex',justifyContent:'space-between',
+                      alignItems:'flex-start',marginBottom:8}}>
+                      <span style={{fontSize:9,color:'rgba(255,255,255,0.3)',
+                        textTransform:'uppercase',letterSpacing:'0.08em'}}>{p.sku}</span>
+                      {enCarrito&&(
+                        <div style={{width:20,height:20,borderRadius:'50%',background:BRAND,
+                          display:'flex',alignItems:'center',justifyContent:'center',
+                          fontSize:11,color:'#fff',fontWeight:800}}>{enCarrito.qty}</div>
+                      )}
+                    </div>
+                    <div style={{fontSize:13,fontWeight:600,color:'#f0f0f0',lineHeight:1.3,
+                      marginBottom:4,display:'-webkit-box',WebkitLineClamp:2,
+                      WebkitBoxOrient:'vertical',overflow:'hidden'}}>{p.nombre}</div>
+                    <div style={{fontSize:10,color:'rgba(255,255,255,0.35)',marginBottom:10}}>
+                      {p.unidad}
+                    </div>
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                      <span style={{fontFamily:'Georgia,serif',fontSize:17,
+                        fontWeight:700,color:GOLD2}}>${p.precio.toLocaleString()}</span>
+                      <div style={{width:30,height:30,borderRadius:'50%',background:BRAND,
+                        display:'flex',alignItems:'center',justifyContent:'center',
+                        color:'#fff',fontSize:20,fontWeight:300}}>+</div>
+                    </div>
+                  </motion.div>
                 )
               })}
             </div>
@@ -564,35 +631,29 @@ function POS({ empresa, onBack }: { empresa: typeof EMPRESAS[0]; onBack: () => v
         )}
 
         {/* HISTORIAL */}
-        {tab === 'ventas' && (
-          <div style={{padding:'12px 16px'}}>
-            <FI d={0} c={
-              <>
-                <div style={{fontSize:11,color:'#888',textTransform:'uppercase',
-                  letterSpacing:'0.1em',marginBottom:4}}>VENTAS DEL DÍA</div>
-                <div style={{fontFamily:'Georgia,serif',fontSize:28,color:BRAND,
-                  fontWeight:700,marginBottom:20}}>
-                  ${totalHoy.toLocaleString()}
-                </div>
-              </>
-            }/>
+        {tab === 'historial' && (
+          <div style={{padding:'16px 14px'}}>
+            <div style={{fontSize:11,color:'rgba(255,255,255,0.4)',textTransform:'uppercase',
+              letterSpacing:'0.1em',marginBottom:6}}>VENTAS DEL DÍA</div>
+            <div style={{fontFamily:'Georgia,serif',fontSize:28,color:GOLD2,
+              fontWeight:700,marginBottom:20}}>${totalHoy.toLocaleString()}</div>
             <div style={{display:'flex',flexDirection:'column',gap:10}}>
-              {ventasHoy.map((v,i) => (
-                <FI key={v.id} d={i*0.05} c={
-                  <div style={{background:'#1a1a1a',border:'1px solid rgba(255,255,255,0.07)',
-                    borderRadius:14,padding:'13px 16px'}}>
-                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
-                      <div>
-                        <div style={{fontSize:14,fontWeight:600,color:'#f0f0f0'}}>{v.cliente}</div>
-                        <div style={{fontSize:11,color:'#888'}}>{v.id} · {v.items} prod · {v.hora} · {v.metodo}</div>
-                        <div style={{fontSize:10,color:'#666',marginTop:2}}>{v.empresa}</div>
-                      </div>
-                      <div style={{fontFamily:'Georgia,serif',fontSize:16,fontWeight:700,color:BRAND}}>
-                        ${v.total.toLocaleString()}
-                      </div>
+              {ventas.map((v,i)=>(
+                <motion.div key={v.id} initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
+                  transition={{delay:i*0.05}}
+                  style={{background:'#1a1a1a',border:`1px solid ${BRAND}44`,
+                    borderRadius:14,padding:'13px 16px',
+                    display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                  <div>
+                    <div style={{fontSize:14,fontWeight:600,color:'#f0f0f0'}}>{v.cliente}</div>
+                    <div style={{fontSize:11,color:'rgba(255,255,255,0.4)'}}>
+                      {v.id} · {v.metodo} · {v.hora} · {v.empresa}
                     </div>
                   </div>
-                }/>
+                  <div style={{fontFamily:'Georgia,serif',fontSize:16,fontWeight:700,color:GOLD2}}>
+                    ${v.total.toLocaleString()}
+                  </div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -600,29 +661,31 @@ function POS({ empresa, onBack }: { empresa: typeof EMPRESAS[0]; onBack: () => v
 
         {/* INVENTARIO */}
         {tab === 'inventario' && (
-          <div style={{padding:'12px 16px'}}>
-            <FI d={0} c={
-              <div style={{fontSize:11,color:'#888',textTransform:'uppercase',
-                letterSpacing:'0.1em',marginBottom:14}}>
-                {PRODUCTOS.length} PRODUCTOS EN CATÁLOGO
-              </div>
-            }/>
+          <div style={{padding:'16px 14px'}}>
+            <div style={{fontSize:11,color:'rgba(255,255,255,0.4)',textTransform:'uppercase',
+              letterSpacing:'0.1em',marginBottom:14}}>{PRODUCTOS.length} PRODUCTOS</div>
             <div style={{display:'flex',flexDirection:'column',gap:8}}>
-              {PRODUCTOS.map((p,i) => (
-                <FI key={p.id} d={i*0.03} c={
-                  <div style={{background:'#1a1a1a',border:'1px solid rgba(255,255,255,0.07)',
+              {PRODUCTOS.map((p,i)=>(
+                <motion.div key={p.id} initial={{opacity:0}} animate={{opacity:1}}
+                  transition={{delay:i*0.03}}
+                  style={{background:'#1a1a1a',border:`1px solid ${BRAND}33`,
                     borderRadius:12,padding:'12px 16px',
                     display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                    <div>
-                      <div style={{fontSize:13,fontWeight:500,color:'#f0f0f0'}}>{p.nombre}</div>
-                      <div style={{fontSize:11,color:'#888'}}>{p.sku} · {p.unidad}</div>
-                    </div>
-                    <div style={{textAlign:'right'}}>
-                      <div style={{fontSize:14,fontWeight:700,color:BRAND}}>${p.precio.toLocaleString()}</div>
-                      <div style={{fontSize:11,color:p.stock<80?'#FF9800':'#4CAF50'}}>{p.stock} disponibles</div>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:500,color:'#f0f0f0'}}>{p.nombre}</div>
+                    <div style={{fontSize:11,color:'rgba(255,255,255,0.3)'}}>
+                      {p.sku} · {p.unidad}
                     </div>
                   </div>
-                }/>
+                  <div style={{textAlign:'right'}}>
+                    <div style={{fontSize:14,fontWeight:700,color:GOLD2}}>
+                      ${p.precio.toLocaleString()}
+                    </div>
+                    <div style={{fontSize:11,color:p.stock<80?'#FF9800':'#4CAF50'}}>
+                      {p.stock} disp.
+                    </div>
+                  </div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -630,68 +693,85 @@ function POS({ empresa, onBack }: { empresa: typeof EMPRESAS[0]; onBack: () => v
 
         {/* ADMIN */}
         {tab === 'admin' && (
-          <div style={{padding:'12px 16px'}}>
-            <FI d={0} c={
-              <>
-                <div style={{fontSize:11,color:'#888',textTransform:'uppercase',
-                  letterSpacing:'0.1em',marginBottom:16}}>RESUMEN GENERAL</div>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:20}}>
-                  {[
-                    {l:'Ventas hoy',    v:`$${totalHoy.toLocaleString()}`,  c:BRAND},
-                    {l:'Transacciones', v:ventasHoy.length.toString(),       c:'#f0f0f0'},
-                    {l:'Productos',     v:PRODUCTOS.length.toString(),        c:'#FF9800'},
-                    {l:'Sucursales',    v:'3',                                c:'#4CAF50'},
-                  ].map((s,i) => (
-                    <div key={i} style={{background:'#1a1a1a',borderRadius:14,padding:'16px',
-                      border:'1px solid rgba(255,255,255,0.07)'}}>
-                      <div style={{fontSize:11,color:'#888',marginBottom:6}}>{s.l}</div>
-                      <div style={{fontFamily:'Georgia,serif',fontSize:24,color:s.c,fontWeight:700}}>{s.v}</div>
-                    </div>
-                  ))}
+          <div style={{padding:'16px 14px'}}>
+            {/* Banner de empresa */}
+            <div style={{borderRadius:20,overflow:'hidden',marginBottom:20,position:'relative',height:120}}>
+              <img src={empresa.img} alt={empresa.nombre}
+                style={{width:'100%',height:'100%',objectFit:'cover',filter:'brightness(0.5)'}}/>
+              <div style={{position:'absolute',inset:0,padding:'16px 20px',
+                display:'flex',alignItems:'flex-end'}}>
+                <div>
+                  <div style={{fontSize:18,fontWeight:800,color:'#fff'}}>{empresa.full}</div>
+                  <div style={{fontSize:12,color:GOLD2}}>{empresa.ciudad}</div>
                 </div>
+              </div>
+            </div>
 
-                <div style={{fontSize:11,color:'#888',textTransform:'uppercase',
-                  letterSpacing:'0.1em',marginBottom:12}}>POR SUCURSAL HOY</div>
-                {EMPRESAS.map((e,i) => {
-                  const vs = ventasHoy.filter(v => v.empresa === e.nombre)
-                  const tot = vs.reduce((a,v) => a+v.total, 0)
-                  return (
-                    <div key={e.id} style={{background:'#1a1a1a',borderRadius:12,
-                      padding:'13px 16px',marginBottom:8,
-                      border:`1px solid rgba(255,255,255,0.07)`,
-                      display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                      <div style={{display:'flex',alignItems:'center',gap:10}}>
-                        <div style={{width:10,height:10,borderRadius:'50%',background:e.color}}/>
-                        <div>
-                          <div style={{fontSize:13,fontWeight:600,color:'#f0f0f0'}}>{e.nombre}</div>
-                          <div style={{fontSize:11,color:'#888'}}>{vs.length} ventas hoy</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:20}}>
+              {[
+                {l:'Ventas hoy',    v:`$${totalHoy.toLocaleString()}`, c:GOLD2},
+                {l:'Transacciones', v:ventas.length.toString(),         c:'#fff'},
+                {l:'Productos',     v:PRODUCTOS.length.toString(),      c:'#FF9800'},
+                {l:'Sucursales',    v:'3',                               c:'#4CAF50'},
+              ].map((s,i)=>(
+                <div key={i} style={{background:'#1a1a1a',borderRadius:14,padding:'16px',
+                  border:`1px solid ${BRAND}44`}}>
+                  <div style={{fontSize:11,color:'rgba(255,255,255,0.4)',marginBottom:6}}>{s.l}</div>
+                  <div style={{fontFamily:'Georgia,serif',fontSize:24,color:s.c,fontWeight:700}}>
+                    {s.v}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Sucursales con foto Higgsfield */}
+            <div style={{fontSize:11,color:'rgba(255,255,255,0.4)',textTransform:'uppercase',
+              letterSpacing:'0.1em',marginBottom:12}}>TODAS LAS SUCURSALES</div>
+            <div style={{display:'flex',flexDirection:'column',gap:10}}>
+              {EMPRESAS.map(e=>{
+                const vs = ventas.filter(v=>v.empresa===e.nombre)
+                const tot = vs.reduce((a,v)=>a+v.total,0)
+                return (
+                  <div key={e.id} style={{borderRadius:14,overflow:'hidden',position:'relative',
+                    height:80,border:`1px solid ${GOLD}33`}}>
+                    <img src={e.img} alt={e.nombre}
+                      style={{width:'100%',height:'100%',objectFit:'cover',filter:'brightness(0.4)'}}/>
+                    <div style={{position:'absolute',inset:0,padding:'10px 16px',
+                      display:'flex',alignItems:'center',justifyContent:'space-between',
+                      background:`linear-gradient(135deg, ${e.color}99 0%, transparent 60%)`}}>
+                      <div>
+                        <div style={{fontSize:14,fontWeight:700,color:'#fff'}}>{e.full}</div>
+                        <div style={{fontSize:11,color:'rgba(255,255,255,0.5)'}}>
+                          {vs.length} ventas hoy
                         </div>
                       </div>
-                      <div style={{fontFamily:'Georgia,serif',fontSize:16,fontWeight:700,color:e.color}}>
-                        ${tot.toLocaleString()}
-                      </div>
+                      <div style={{fontFamily:'Georgia,serif',fontSize:18,
+                        fontWeight:700,color:GOLD2}}>${tot.toLocaleString()}</div>
                     </div>
-                  )
-                })}
-              </>
-            }/>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         )}
       </div>
 
-      {/* BOTTOM NAV */}
+      {/* BOTTOM NAV — sin íconos, texto limpio */}
       <nav style={{position:'fixed',bottom:0,left:0,right:0,height:64,
-        background:'rgba(15,15,15,0.97)',backdropFilter:'blur(20px)',
-        borderTop:'1px solid rgba(255,255,255,0.06)',
-        display:'flex',alignItems:'center',zIndex:100}}>
-        {TABS.map(({id,l,icon}) => (
-          <motion.button key={id} onClick={() => setTab(id)} whileTap={{scale:0.9}}
-            style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:3,
-              padding:'8px 0',border:'none',cursor:'pointer',background:'transparent',
-              color:tab===id ? BRAND : '#444',fontSize:10,
-              textTransform:'uppercase',letterSpacing:'0.04em',minHeight:44,fontFamily:'inherit'}}>
-            <div style={{width:22,height:22}}>{icon}</div>
-            <span>{l}</span>
+        background:'rgba(17,17,17,0.98)',backdropFilter:'blur(20px)',
+        borderTop:`2px solid ${BRAND}`,
+        display:'flex',alignItems:'stretch',zIndex:100}}>
+        {TABS.map(({id,l})=>(
+          <motion.button key={id} onClick={()=>setTab(id)} whileTap={{scale:0.95}}
+            style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',
+              padding:'0 4px',border:'none',cursor:'pointer',background:'transparent',
+              fontFamily:"'Poppins',sans-serif",
+              fontSize:tab===id?12:11,fontWeight:tab===id?700:400,
+              color:tab===id?GOLD2:'rgba(255,255,255,0.35)',
+              borderTop:tab===id?`3px solid ${BRAND}`:'3px solid transparent',
+              transition:'all 150ms',letterSpacing:'0.02em',
+              textTransform:'uppercase'}}>
+            {l}
           </motion.button>
         ))}
       </nav>
@@ -699,33 +779,33 @@ function POS({ empresa, onBack }: { empresa: typeof EMPRESAS[0]; onBack: () => v
   )
 }
 
-/* ══════════════════════════════════════════
-   ROOT
-══════════════════════════════════════════ */
+/* ══════ ROOT ══════ */
 export default function ForrajeraApp() {
   const [step, setStep] = useState<'splash'|'landing'|'selector'|'pos'>('splash')
   const [empresa, setEmpresa] = useState<typeof EMPRESAS[0]|null>(null)
 
   return (
     <AnimatePresence mode="wait">
-      {step === 'splash' && (
+      {step==='splash' && (
         <motion.div key="splash" exit={{opacity:0}}>
-          <Splash onDone={() => setStep('landing')}/>
+          <Splash onDone={()=>setStep('landing')}/>
         </motion.div>
       )}
-      {step === 'landing' && (
+      {step==='landing' && (
         <motion.div key="landing" initial={{opacity:0}} animate={{opacity:1}}>
-          <Landing onEntrar={() => setStep('selector')}/>
+          <Landing onEntrar={()=>setStep('selector')}/>
         </motion.div>
       )}
-      {step === 'selector' && (
+      {step==='selector' && (
         <motion.div key="selector" initial={{opacity:0}} animate={{opacity:1}}>
-          <SelectorEmpresa onSelect={(e) => { setEmpresa(e); setStep('pos') }}/>
+          <SelectorEmpresa
+            onSelect={e=>{setEmpresa(e);setStep('pos')}}
+            onBack={()=>setStep('landing')}/>
         </motion.div>
       )}
-      {step === 'pos' && empresa && (
+      {step==='pos' && empresa && (
         <motion.div key="pos" initial={{opacity:0}} animate={{opacity:1}}>
-          <POS empresa={empresa} onBack={() => setStep('selector')}/>
+          <POS empresa={empresa} onBack={()=>setStep('selector')}/>
         </motion.div>
       )}
     </AnimatePresence>
