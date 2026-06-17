@@ -1,35 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  --brand:      #C62828;
-  --brand-2:    #E53935;
-  --brand-soft: rgba(198,40,40,0.10);
-  --bg:         #0f0f0f;
-  --surface:    #1a1a1a;
-  --surface-2:  #222222;
-  --border:     rgba(255,255,255,0.08);
-  --text:       #f0f0f0;
-  --text-soft:  #888888;
-
-  --sp-1: 8px; --sp-2: 16px; --sp-3: 24px; --sp-4: 32px;
-  --r-sm: 8px; --r-md: 14px; --r-lg: 20px;
-  --anim-fast: 150ms; --anim-normal: 250ms;
-  --nav-h: 64px;
-}
-
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { height: 100%; }
+html { height: 100%; scroll-behavior: smooth; }
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
+  background: #111;
+  color: #f0f0f0;
+  font-family: 'Poppins', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: none;
+  min-height: 100%;
 }
-
 ::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: #8B000066; border-radius: 2px; }
