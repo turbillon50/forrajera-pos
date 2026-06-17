@@ -304,7 +304,7 @@ function POS({ empresa, onBack }: { empresa: typeof EMPRESAS[0]; onBack: () => v
               display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16}}>
             <motion.div initial={{scale:0}} animate={{scale:1}} transition={{type:'spring',damping:15}}>
               <div style={{width:80,height:80,borderRadius:'50%',background:BRAND,
-                display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',width:80,height:80}}>
+                display:'flex',alignItems:'center',justifyContent:'center',color:'#fff'}}>
                 <div style={{width:36,height:36}}>{IC.check}</div>
               </div>
             </motion.div>
